@@ -1,7 +1,8 @@
 continente-contem-pais
 regiao_continental-contem-pais
 pais-possui-idioma
-pais-possui-populacao 
+pais-possui-populacao
+pais-possui-area
 pais-possui-governo
 pais-possui-colonia
 pais-possui-moeda
