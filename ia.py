@@ -48,13 +48,40 @@ def printaGrafo(verts):
             print("Nome valor: "+str(y))
         print()
 
-def verificaExisteRecursivo(vertice,vertAnt,nome,profundidade):
+def verificaExisteRecursivoNum(nomeVertParada,vertice,vertAnt,nome,profundidade):
     if profundidade==0:
         return ""
     #print(vertice.nome+"  "+nome)
-    oceanos=""
+    pib = [0,0]
     for x in vertice.arestas:
-        if(x.vertices[0].nome=="oceano" or x.vertices[1].nome=="oceano" ):
+        if(x.vertices[0].nome==nomeVertParada or x.vertices[1].nome==nomeVertParada ):
+            for y in x.relacoes:
+                if(y[0]==nome):
+                    return [1,int(y[1])]
+                if(y[1]==nome):
+                    return [1,int(y[0])]
+        if(x.vertices[0].nome!=vertAnt and x.vertices[1].nome!=vertAnt):
+            for y in x.relacoes:
+                val = [0,0]
+                if(y[0]==nome and x.vertices[0].nome==vertice.nome):
+                    val =verificaExisteRecursivoNum(nomeVertParada,x.vertices[1],vertice.nome,y[1],profundidade-1)
+                if(y[1]==nome and x.vertices[0].nome==vertice.nome):
+                    val =verificaExisteRecursivoNum(nomeVertParada,x.vertices[1],vertice.nome,y[0],profundidade-1)
+                if(y[0]==nome and x.vertices[1].nome==vertice.nome):
+                    val =verificaExisteRecursivoNum(nomeVertParada,x.vertices[0],vertice.nome,y[1],profundidade-1)
+                if(y[1]==nome and x.vertices[1].nome==vertice.nome):
+                    val =verificaExisteRecursivoNum(nomeVertParada,x.vertices[0],vertice.nome,y[0],profundidade-1)
+                pib[0]+=val[0]
+                pib[1]+=val[1]
+    return pib
+
+def verificaExisteRecursivo(nomeVertParada,vertice,vertAnt,nome,profundidade):
+    if profundidade==0:
+        return ""
+    #print(vertice.nome+"  "+nome)
+    vals=""
+    for x in vertice.arestas:
+        if(x.vertices[0].nome==nomeVertParada or x.vertices[1].nome==nomeVertParada ):
             for y in x.relacoes:
                 if(y[0]==nome):
                     return " "+y[1]
@@ -63,14 +90,133 @@ def verificaExisteRecursivo(vertice,vertAnt,nome,profundidade):
         if(x.vertices[0].nome!=vertAnt and x.vertices[1].nome!=vertAnt):
             for y in x.relacoes:
                 if(y[0]==nome and x.vertices[0].nome==vertice.nome):
-                    oceanos +=verificaExisteRecursivo(x.vertices[1],vertice.nome,y[1],profundidade-1)
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[1],vertice.nome,y[1],profundidade-1)
                 if(y[1]==nome and x.vertices[0].nome==vertice.nome):
-                    oceanos +=verificaExisteRecursivo(x.vertices[1],vertice.nome,y[0],profundidade-1)
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[1],vertice.nome,y[0],profundidade-1)
                 if(y[0]==nome and x.vertices[1].nome==vertice.nome):
-                    oceanos +=verificaExisteRecursivo(x.vertices[0],vertice.nome,y[1],profundidade-1)
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[0],vertice.nome,y[1],profundidade-1)
                 if(y[1]==nome and x.vertices[1].nome==vertice.nome):
-                    oceanos +=verificaExisteRecursivo(x.vertices[0],vertice.nome,y[0],profundidade-1)
-    return oceanos
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[0],vertice.nome,y[0],profundidade-1)
+    return vals
+
+def verificaExisteRecursivov2(nomeVertParada,vertice,vertAnt,nome,profundidade):
+    if profundidade==0:
+        return ""
+    #print(vertice.nome+"  "+nome)
+    vals=""
+    for x in vertice.arestas:
+        if(x.vertices[0].nome==nomeVertParada or x.vertices[1].nome==nomeVertParada ):
+            sum=""
+            for y in x.relacoes:
+                if(y[0]==nome):
+                    sum +=" "+y[1]
+                if(y[1]==nome):
+                    sum += " "+y[0]
+            return sum
+        if(x.vertices[0].nome!=vertAnt and x.vertices[1].nome!=vertAnt):
+            for y in x.relacoes:
+                if(y[0]==nome and x.vertices[0].nome==vertice.nome):
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[1],vertice.nome,y[1],profundidade-1)
+                if(y[1]==nome and x.vertices[0].nome==vertice.nome):
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[1],vertice.nome,y[0],profundidade-1)
+                if(y[0]==nome and x.vertices[1].nome==vertice.nome):
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[0],vertice.nome,y[1],profundidade-1)
+                if(y[1]==nome and x.vertices[1].nome==vertice.nome):
+                    vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[0],vertice.nome,y[0],profundidade-1)
+    return vals
+
+
+def verificaExisteRecursivoDuploFiltrado(parada,vertice,vertAnt,nome,profundidade,vencedores):
+    #print(vertice.nome+"  "+nome)
+    if(profundidade==0):
+        return vencedores
+    for x in vertice.arestas:
+        if(parada==[]):
+            return vencedores
+        if(x.vertices[0].nome==parada[0][0] or x.vertices[1].nome==parada[0][0]):
+            vencedores[0]+=1
+            if(vencedores[1]==[]):
+                for y in x.relacoes:
+                    if (y[0] == nome):
+                        vencedores[1].append(y[1])
+                    if (y[1] == nome):
+                        vencedores[1].append(y[0])
+            else:
+                paises = verificaExisteRecursivov2("pais",x.vertices[1],"",parada[0][1],6).split(" ")
+                for y in vencedores[1]:
+                    if y in paises:
+                        vencedores[0]+=1
+                    else:
+                        vencedores[1].remove(y)
+                for y in vencedores[1]:
+                    if y in paises:
+                        vencedores[0]+=1
+                    else:
+                        vencedores[1].remove(y)
+
+            parada.pop(0)
+
+        if(x.vertices[0].nome!=vertAnt and x.vertices[1].nome!=vertAnt):
+            for y in x.relacoes:
+                valsTemp=[0,[]]
+                if(y[0]==nome and x.vertices[0].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuploFiltrado(parada,x.vertices[1],vertice.nome,y[1],profundidade-1,vencedores)
+                if(y[1]==nome and x.vertices[0].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuploFiltrado(parada,x.vertices[1],vertice.nome,y[0],profundidade-1,vencedores)
+                if(y[0]==nome and x.vertices[1].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuploFiltrado(parada,x.vertices[0],vertice.nome,y[1],profundidade-1,vencedores)
+                if(y[1]==nome and x.vertices[1].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuploFiltrado(parada,x.vertices[0],vertice.nome,y[0],profundidade-1,vencedores)
+                if(valsTemp[0]>vencedores[0]):
+                    vencedores=valsTemp
+    return vencedores
+
+def verificaExisteRecursivoDuplo(nomeVertParada,nomeVertParada2,vertice,vertAnt,nome,profundidade):
+    if profundidade==0:
+        return ""
+    #print(vertice.nome+"  "+nome)
+    vals=[]
+    valsTemp = []
+    for x in vertice.arestas:
+        if(x.vertices[0].nome==nomeVertParada ):
+            segundaVerificaTemp = []
+            segundaVerificaMaior = []
+            for y in x.vertices[0].valores:
+                segunda = verificaExisteRecursivo(nomeVertParada2,x.vertices[0],"",y,6)
+                segundaVerificaTemp = []
+                for z in x.vertices[0].valores:
+                    segundaVerifica = verificaExisteRecursivo(nomeVertParada2,x.vertices[0],"",z,6)
+                    if(segunda==segundaVerifica):
+                        segundaVerificaTemp.append(z)
+                if(len(segundaVerificaTemp) >len(segundaVerificaMaior)):
+                    segundaVerificaMaior=segundaVerificaTemp
+            return segundaVerificaMaior
+        if(x.vertices[1].nome==nomeVertParada ):
+            segundaVerificaMaior = []
+            for y in x.vertices[1].valores:
+                segunda = verificaExisteRecursivo(nomeVertParada2,x.vertices[1],"",y,6)
+                segundaVerificaTemp = []
+                for z in x.vertices[1].valores:
+                    segundaVerifica = verificaExisteRecursivo(nomeVertParada2,x.vertices[1],"",z,6)
+                    if(segunda==segundaVerifica):
+                        segundaVerificaTemp.append(z)
+                if(len(segundaVerificaTemp) >len(segundaVerificaMaior)):
+                    segundaVerificaMaior=segundaVerificaTemp
+            return segundaVerificaMaior
+        if(x.vertices[0].nome!=vertAnt and x.vertices[1].nome!=vertAnt):
+            for y in x.relacoes:
+                if(y[0]==nome and x.vertices[0].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuplo(nomeVertParada,nomeVertParada2,x.vertices[1],vertice.nome,y[1],profundidade-1)
+                if(y[1]==nome and x.vertices[0].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuplo(nomeVertParada,nomeVertParada2,x.vertices[1],vertice.nome,y[0],profundidade-1)
+                if(y[0]==nome and x.vertices[1].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuplo(nomeVertParada,nomeVertParada2,x.vertices[0],vertice.nome,y[1],profundidade-1)
+                if(y[1]==nome and x.vertices[1].nome==vertice.nome):
+                    valsTemp =verificaExisteRecursivoDuplo(nomeVertParada,nomeVertParada2,x.vertices[0],vertice.nome,y[0],profundidade-1)
+    if len(valsTemp)>len(vals):
+        return valsTemp
+    return vals
+
 
 vertices=[]
 arestas=[]
@@ -116,7 +262,7 @@ for linha in linhas:
             vert2.valores.append(linha[1][1])
 
     if(linha[0]=="ilha"):
-        linha[1] = [linha[1],linha[1]]
+        linha[1] = [linha[1][0],linha[1][0]]
         arest = verificaSeExisteArestaPorNome(arestas,"pais",linha[0])
         arest.relacoes.append(linha[1])
         vert1 = verificaSeExiste(vertices,"pais")
@@ -133,11 +279,11 @@ for linha in linhas:
         arest = verificaSeExisteArestaPorNome(arestas,"subcontinente",linha[0])
         arest.relacoes.append(linha[1])
         vert1 = verificaSeExiste(vertices,"subcontinente")
-        if(not verificaSeExisteVal(vert1,linha[1][0])):
-            vert1.valores.append(linha[1][0])
+        if(not verificaSeExisteVal(vert1,linha[1][0][0])):
+            vert1.valores.append(linha[1][0][0])
         vert2 = verificaSeExiste(vertices,linha[0])
-        if(not verificaSeExisteVal(vert2,linha[1][1])):
-            vert2.valores.append(linha[1][1])
+        if(not verificaSeExisteVal(vert2,linha[1][1][1])):
+            vert2.valores.append(linha[1][1][1])
 
 printaGrafo(vertices)
 
@@ -145,8 +291,48 @@ printaGrafo(vertices)
 #quero achar continente-banhado-oceano
 
 vertice = verificaSeExiste(vertices,"continente")
-mylist = verificaExisteRecursivo(vertice,"","america",6).split(" ")
+mylist = verificaExisteRecursivo("oceano",vertice,"","america",6).split(" ")
 mylist = list(dict.fromkeys(mylist))
 mylist.pop(0)
-print(mylist)
+print("Pergunta 1:")
+print("America é banhado por:")
+for val in mylist:
+    print(val)
+print()
+
+#exemplo de pergunta para testar: Qual subcontinente possui a maior media de pib?
+#quero achar subcontinente-possui-pib
+maior = [0,""]
+vertice2 = verificaSeExiste(vertices,"subcontinente")
+for val in vertice2.valores:
+    pibAtual = verificaExisteRecursivoNum("pib",vertice2,"",val,6)
+    if(pibAtual[1]/pibAtual[0]>maior[0]):
+        maior[0]=pibAtual[1]/pibAtual[0]
+        maior[1]=val
+print("Pergunta 2:")
+print("O maior pib eh de "+str(maior[1])+" com: "+str(maior[0]))
+
+#exemplo de pergunta para testar: Qual ilhas possuem a mesma moeda na america central?
+#quero primeiro subcontinente-possui-ilha
+vertice = verificaSeExiste(vertices,"subcontinente")
+mylist = verificaExisteRecursivoDuplo("ilha","moeda",vertice,"","america_central",6)
+print()
+
+print("Pergunta 3:")
+print("As ilhas que possuem a mesma moeda na america central:")
+for val in mylist:
+    print(val)
+print()
+
+#exemplo de pergunta para testar: Os países da América do Sul, que foram colônia da Espanha e hoje são república presidencialista
+vertice = verificaSeExiste(vertices,"subcontinente")
+verificacoes=[["pais",""],["colonia","espanha"],["governo","republica_presidencialista"]]
+mylist = verificaExisteRecursivoDuploFiltrado(verificacoes,vertice,"","america_do_sul",6,[0,[]])
+
+print("Pergunta 4:")
+print("Os países da América do Sul, que foram colônia da Espanha e hoje são república presidencialista são:")
+for val in mylist[1]:
+    print(val)
+print()
+
 f.close()
