@@ -48,18 +48,22 @@ def printaGrafo(verts):
             print("Nome valor: "+str(y))
         print()
 
+#Função responsável por retornar a quantidade de valores, e os valores numericos em um array
+#da relação entre o valor "nome" do vertice "vertice" até a vertice com nome "nomeVertParada"
 def verificaExisteRecursivoNum(nomeVertParada,vertice,vertAnt,nome,profundidade):
     if profundidade==0:
         return ""
     #print(vertice.nome+"  "+nome)
     pib = [0,0]
     for x in vertice.arestas:
+        #se encontrou o vertice que estava procurando, ele preenche com os valores
         if(x.vertices[0].nome==nomeVertParada or x.vertices[1].nome==nomeVertParada ):
             for y in x.relacoes:
                 if(y[0]==nome):
                     return [1,int(y[1])]
                 if(y[1]==nome):
                     return [1,int(y[0])]
+        #se não encontrou, ele continua procurando, indo para o proximo vertice pelas relações na aresta
         if(x.vertices[0].nome!=vertAnt and x.vertices[1].nome!=vertAnt):
             for y in x.relacoes:
                 val = [0,0]
@@ -75,6 +79,7 @@ def verificaExisteRecursivoNum(nomeVertParada,vertice,vertAnt,nome,profundidade)
                 pib[1]+=val[1]
     return pib
 
+#simular ao verificaExisteRecursivo, no entanto, inves de retornar array, retorna um somatorio de strings
 def verificaExisteRecursivo(nomeVertParada,vertice,vertAnt,nome,profundidade):
     if profundidade==0:
         return ""
@@ -99,6 +104,7 @@ def verificaExisteRecursivo(nomeVertParada,vertice,vertAnt,nome,profundidade):
                     vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[0],vertice.nome,y[0],profundidade-1)
     return vals
 
+#versao modificada do verificaExisteRecursivo, no qual leva em consideracao que o mesmo vertice pode ter varios valores a ser utilizado
 def verificaExisteRecursivov2(nomeVertParada,vertice,vertAnt,nome,profundidade):
     if profundidade==0:
         return ""
@@ -125,7 +131,8 @@ def verificaExisteRecursivov2(nomeVertParada,vertice,vertAnt,nome,profundidade):
                     vals +=verificaExisteRecursivo(nomeVertParada,x.vertices[0],vertice.nome,y[0],profundidade-1)
     return vals
 
-
+#versao especial do verificaExisteRecursivo, com varias condições de parada, cada vez que parada é alcançada, ele verifica os paises que
+#serão vencedores e retorna.
 def verificaExisteRecursivoDuploFiltrado(parada,vertice,vertAnt,nome,profundidade,vencedores):
     #print(vertice.nome+"  "+nome)
     if(profundidade==0):
@@ -171,6 +178,8 @@ def verificaExisteRecursivoDuploFiltrado(parada,vertice,vertAnt,nome,profundidad
                     vencedores=valsTemp
     return vencedores
 
+#verificaExisteRecursivo no qual a condicão de parada compara verifica a quantidade de relações entre 2 pontos, no caso, ele
+#verifica quais paises tem a maior quantidade de moedas iguais, mas precisa percorrer o grafo até alcançar esse ponto
 def verificaExisteRecursivoDuplo(nomeVertParada,nomeVertParada2,vertice,vertAnt,nome,profundidade):
     if profundidade==0:
         return ""
@@ -222,6 +231,7 @@ vertices=[]
 arestas=[]
 f= open("grafoIA.txt","r+")
 linhas=f.readlines()
+#leitura do funcionamento do grafo, apenas cria o grafo sem os valores, criando arestas e vertices quando necessarios
 for linha in linhas:
     dividido = linha.strip('\n').strip(" ").split("-")
 
@@ -246,6 +256,7 @@ for linha in linhas:
 
 f= open("importIA.txt","r+")
 linhas=f.readlines()
+#preenche os valores do grafo, com base na função de entrada, ilha e continentes possuem pequenas alterações na adição.
 for linha in linhas:
     linha = linha.strip('\n').strip(" ").strip(".").strip(")")
     linha = linha.split("(")
